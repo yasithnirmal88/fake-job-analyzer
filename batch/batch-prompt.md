@@ -558,6 +558,7 @@ Then include:
 - `## F) Interview Plan`
 - `## G) Posting Legitimacy`
 - `## Risk Assessment`
+- `## Employer Verification`
 - `## Risk Summary`
 - `## Score Evidence`
 - `## Extracted Keywords`

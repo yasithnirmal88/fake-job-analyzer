@@ -476,6 +476,10 @@ Every evaluation report includes a `## Risk Assessment` section — a structured
 
 The Risk Level is determined by **explicit risk indicators** (severity-graded: Critical / High / Medium / Low, defined in `modes/_shared.md` → Risk Assessment → Risk Indicators), not by the A–H fit scores. A high-fit role can be Critical risk; a low-fit role can be Low risk. The two axes are independent. Determination rules are ordered and live in `modes/_shared.md`.
 
+A `## Employer Verification` section sits immediately after Risk Assessment — four lightweight checks (company website, email domain match, careers page, notes) using evidence already gathered, with no new mandatory network calls. These results feed the indicator checks (especially H1, H3, H4, M4) but do not replace the indicator rules.
+
+The sections sit between Block G and Risk Summary in the report. Both are additive — existing reports without them remain valid.
+
 ---
 
 ## CI/CD, Community and Governance

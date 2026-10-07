@@ -646,6 +646,39 @@ Only include indicators that actually fired. If none fired, omit the Key Indicat
 
 ---
 
+## Employer Verification
+
+A lightweight verification block placed immediately after `## Risk Assessment` and before `## Risk Summary`. It records four checks about the employer, using evidence already gathered — **no new network calls, no new mandatory research**.
+
+### Output format:
+
+```markdown
+## Employer Verification
+
+- **Company website:** {Found | Not found | Could not check}
+- **Email domain matches claimed company:** {Yes | No | N/A}
+- **Role found on official careers page:** {Yes | No | Unknown}
+- **Additional notes:** {short free text, or —}
+```
+
+### Rules for filling the fields:
+
+1. **Prefer existing evidence.** Use what Block G, the JD text, and any WebSearch already performed reveal. Do not introduce new mandatory network calls that can block or slow evaluation.
+2. **Never invent results.** If a check cannot be performed reliably, mark it `Could not check` or `Unknown`.
+3. **Company website** — `Found` when a website for the claimed company was observed (in the JD, during Block G research, or in any snapshot); `Not found` when research looked and found nothing; `Could not check` when no research was done or the result is inconclusive.
+4. **Email domain match** — a simple string comparison between the recruiter email domain (when present) and the claimed company domain/website. `N/A` when there is no recruiter email in the input.
+5. **Careers page** — `Yes` only when there is clear evidence the specific role (or a very close variant) appears on an official company careers page. Otherwise `Unknown` (did not look) or `No` (looked, not found). Never infer `Yes` from a third-party board.
+
+### Relationship to Risk Assessment:
+
+These verification results are **additional evidence** feeding the indicator checks — especially H1 (free email domain), H3 (missing company info), H4 (domain mismatch), and M4 (limited online presence). They do **not** replace the indicator rules in `modes/_shared.md`; they supply inputs to them. A `Company website: Not found` combined with `Email domain matches: No` strengthens H3/H4; a `Found` + `Yes` + `Yes` combination supports `Likely Genuine`.
+
+Language remains careful and non-absolute: the block states observed facts only ("website: Not found"), never conclusions ("the company does not exist").
+
+**Backward compatibility:** Reports written before this section existed remain valid. The section is additive.
+
+---
+
 ## Risk Summary (after Block G)
 
 Close the report body with a `## Risk Summary` block directly after Block G's section — one row per risk signal, fixed order — so the question the candidate actually asks ("is this company safe to join?") is answered on one screen instead of by mentally joining Block A, Block G, and a sidecar file.
@@ -805,6 +838,9 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 
 ## Risk Assessment
 (Overall Risk Level, Risk Categories, Confidence, Summary, optional Key Indicators — see the Risk Assessment section above)
+
+## Employer Verification
+(company website, email domain match, careers page check, additional notes — see the Employer Verification section above)
 
 ## Risk Summary
 (one row per risk signal, fixed order — see the Risk Summary section above)
