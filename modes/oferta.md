@@ -610,6 +610,14 @@ After Block G's signals are evaluated, produce a structured `## Risk Assessment`
 
 **The Risk Assessment is determined by explicit indicators, not by the A–H fit scores.** A high-fit role (4.5/5) can still be Critical risk (scam posting), and a low-fit role (2.0/5) can be Low risk (real job, wrong match). The two axes are independent.
 
+### How to produce it:
+
+1. **Check which indicators fired** using the evidence already gathered in Block G and Block A. The full indicator list with severity levels and evidence sources is in `modes/_shared.md` → **Risk Assessment** → **Risk Indicators**.
+2. **Apply the determination rules** from `modes/_shared.md` → **Risk Assessment** → **Determination rules** to compute the Overall Risk Level.
+3. **Assign Risk Categories** from the fired indicators (multi-label).
+4. **Assign Confidence** based on evidence quality and indicator coverage.
+5. **Write a 1-2 sentence Summary** synthesizing the verdict in careful, qualified language.
+
 ### Output format:
 
 ```markdown
@@ -619,7 +627,20 @@ After Block G's signals are evaluated, produce a structured `## Risk Assessment`
 - **Risk Categories:** {Scam Indicators | Ghost/Stale | Suspicious | Likely Genuine}
 - **Confidence:** {High | Medium | Low}
 - **Summary:** {1-2 sentences explaining the verdict}
+
+### Key Indicators (optional)
+
+- {severity emoji} {ID} ({severity}): {indicator name} — "{very short evidence snippet}"
 ```
+
+Only include indicators that actually fired. If none fired, omit the Key Indicators subsection entirely.
+
+### Language discipline (MANDATORY):
+
+- **Never** state "this is a scam", "this is definitely fake", or "this is a ghost job" as a conclusion.
+- **Always** use qualified language: "High risk of…", "Multiple strong indicators suggest…", "This posting shows patterns consistent with…".
+- **Always** note legitimate explanations when the evidence allows: "This could also be explained by a small team without dedicated HR…".
+- The Risk Assessment presents **evidence and indicators**, not verdicts. The candidate decides.
 
 **Backward compatibility:** Reports written before this section existed remain valid. The section is additive — downstream scripts that don't read it are unaffected.
 
@@ -783,7 +804,7 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 (full content of block G)
 
 ## Risk Assessment
-(Overall Risk Level, Risk Categories, Confidence, Summary — see the Risk Assessment section above)
+(Overall Risk Level, Risk Categories, Confidence, Summary, optional Key Indicators — see the Risk Assessment section above)
 
 ## Risk Summary
 (one row per risk signal, fixed order — see the Risk Summary section above)

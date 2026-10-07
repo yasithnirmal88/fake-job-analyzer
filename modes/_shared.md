@@ -189,6 +189,94 @@ The multi-label list can be empty (no categories fired) or contain a single cate
 
 The Overall Risk Level is determined by **which explicit indicators fired**, not by the A–H fit scores. A single Critical indicator (e.g., confirmed scam pattern) can elevate the entire assessment to Critical, regardless of fit score.
 
+### Risk Indicators
+
+Each indicator has a **severity** (Critical / High / Medium / Low) and belongs to one or more **Risk Categories**. Indicators are checked against evidence already gathered in Block G and Block A — no new research is required.
+
+#### Critical severity
+
+Any single Critical indicator forces **Overall Risk Level = 🚨 Critical**.
+
+| ID | Indicator | Evidence source | Categories |
+|----|-----------|-----------------|------------|
+| C1 | Advance fee / registration fee / equipment payment requested | JD text, email | Scam Indicators |
+| C2 | Request for highly sensitive personal data (bank details, NIC/SSN/passport, etc.) before a formal offer | JD text, email | Scam Indicators |
+| C3 | Guaranteed unrealistic income or "too good to be true" claims combined with pressure tactics | JD text | Scam Indicators |
+| C4 | Confirmed scam patterns (known phishing language, fake check schemes, impersonation of real companies) | JD text, WebSearch | Scam Indicators |
+
+#### High severity
+
+Two or more High indicators, or one High + multiple Medium, force **Overall Risk Level = 🔴 High**.
+
+| ID | Indicator | Evidence source | Categories |
+|----|-----------|-----------------|------------|
+| H1 | Recruiter uses free email domain (gmail, yahoo, outlook, hotmail, etc.) while claiming to represent an established company | Email header, JD text | Scam Indicators, Suspicious |
+| H2 | Strong urgency language ("must apply in 24 hours", "positions filling fast", "immediate start") | JD text | Suspicious |
+| H3 | Missing or extremely vague company information (no address, no website, no verifiable identity) | JD text, WebSearch | Suspicious, Ghost/Stale |
+| H4 | Clear domain mismatch (email domain does not match claimed company) | Email header, JD text | Scam Indicators, Suspicious |
+| H5 | Strong ghost/stale signals (repeatedly reposted for months, evergreen language, no concrete team/project details) | scan-history.tsv, JD text | Ghost/Stale |
+
+#### Medium severity
+
+Multiple Medium indicators, or strong Ghost/Stale signals, force **Overall Risk Level = 🟡 Medium**.
+
+| ID | Indicator | Evidence source | Categories |
+|----|-----------|-----------------|------------|
+| M1 | Vague role description (no specific responsibilities, no team context, no deliverables) | JD text | Ghost/Stale, Suspicious |
+| M2 | No salary range when the market normally shows one for this role type | JD text, Block D research | Suspicious |
+| M3 | Unprofessional language / poor grammar (context-dependent — weigh against non-native English norms) | JD text | Suspicious |
+| M4 | Limited company online presence (no LinkedIn, no recent news, no employee profiles) | WebSearch | Ghost/Stale, Suspicious |
+
+#### Low severity
+
+Only Low indicators (or none) → **Overall Risk Level = 🟢 Low**.
+
+| ID | Indicator | Evidence source | Categories |
+|----|-----------|-----------------|------------|
+| L1 | Role title does not match responsibilities (minor mismatch, not contradictory) | JD text | Suspicious |
+| L2 | Benefits not mentioned (neutral in some jurisdictions, weak signal) | JD text | — |
+| L3 | Single repost (not pattern — only fires alongside other signals) | scan-history.tsv | Ghost/Stale |
+
+### Determination rules
+
+Apply these rules in order. The first matching rule wins.
+
+1. **Any Critical indicator (C1–C4) fired** → `🚨 Critical`
+2. **Two or more High indicators (H1–H5) fired** → `🔴 High`
+3. **One High indicator + two or more Medium indicators fired** → `🔴 High`
+4. **One High indicator fired (alone)** → `🟡 Medium`
+5. **Two or more Medium indicators fired** → `🟡 Medium`
+6. **Strong Ghost/Stale signal (H5) fired alone** → `🟡 Medium`
+7. **Only Low indicators (L1–L3) fired, or none** → `🟢 Low`
+
+### Risk Category assignment
+
+Risk Categories are **multi-label** — list every family that has at least one fired indicator:
+
+| Category | Fires when |
+|----------|-----------|
+| Scam Indicators | Any of C1–C4, H1, H4 fired |
+| Ghost/Stale | Any of H5, M1, M4, L3 fired |
+| Suspicious | Any of H2, H3, H4, M1, M2, M3, M4, L1 fired |
+| Likely Genuine | No indicators fired, or only L2 (and no other categories) fired |
+
+The multi-label list can be empty (no categories fired beyond Likely Genuine) or contain a single category when the evidence supports it.
+
+### Confidence assignment
+
+| Level | Condition |
+|-------|-----------|
+| High | Multiple independent direct indicators agree (e.g., C1 + H1 both fired with direct evidence) |
+| Medium | Some indicators present but evidence is indirect or incomplete (e.g., only M4 from a single WebSearch) |
+| Low | Few indicators, evidence is ambiguous or missing (e.g., only L2 fired, or signals are contradictory) |
+
+### Language discipline (MANDATORY)
+
+- **Never** state "this is a scam", "this is definitely fake", or "this is a ghost job" as a conclusion.
+- **Always** use qualified language: "High risk of…", "Multiple strong indicators suggest…", "This posting shows patterns consistent with…".
+- **Always** note legitimate explanations: "This could also be explained by…" when the evidence allows.
+- The Risk Assessment presents **evidence and indicators**, not verdicts. The candidate decides what to do with the information.
+
 ## Company Type and Compensation Reliability
 
 Public salary data is a signal, not a promise. Before interpreting compensation, classify the employer / hiring entity first, then decide how much to trust the published range.

@@ -470,6 +470,14 @@ This is a confirmation step, not a replacement for `check-liveness.mjs` — run 
 
 ---
 
+## Risk Assessment
+
+Every evaluation report includes a `## Risk Assessment` section — a structured verdict layer that synthesizes Block G's signals into an Overall Risk Level (🟢 Low / 🟡 Medium / 🔴 High / 🚨 Critical), Risk Categories (multi-label: Scam Indicators, Ghost/Stale, Suspicious, Likely Genuine), Confidence (High/Medium/Low), and a 1-2 sentence Summary, plus an optional Key Indicators bullet list.
+
+The Risk Level is determined by **explicit risk indicators** (severity-graded: Critical / High / Medium / Low, defined in `modes/_shared.md` → Risk Assessment → Risk Indicators), not by the A–H fit scores. A high-fit role can be Critical risk; a low-fit role can be Low risk. The two axes are independent. Determination rules are ordered and live in `modes/_shared.md`.
+
+---
+
 ## CI/CD, Community and Governance
 
 - **GitHub Actions** on every PR: the full `test-all.mjs` suite, risk-based auto-labeler (🔴 core-architecture, ⚠️ agent-behavior, 📄 docs), first-timer welcome bot. **Branch protection** on `main`: status checks required, no direct pushes (except admin bypass). **Dependabot** on npm/Go/Actions.
