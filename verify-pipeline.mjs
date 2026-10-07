@@ -20,6 +20,7 @@
  * 15. portals.yml entries no provider claims (see #3251)
  * 16. No invisible control characters in tracker cells (error — see #3892)
  * 17. JD archive coverage — check-jd-archive.mjs's findings (warning/error — see #4525)
+ * 18. Risk verification — verify-risk.mjs's findings (warning/error — Risk Assessment layer consistency)
  *
  * Run: node career-ops/verify-pipeline.mjs
  */
@@ -39,6 +40,7 @@ import { normalizeStatus } from './followup-cadence.mjs';
 import { checkFollowupsSchema } from './stats.mjs';
 import { loadCanonicalStates } from './tracker-utils.mjs';
 import { checkJdArchive } from './check-jd-archive.mjs';
+import { checkRiskReports, HARD_FINDING_TYPES } from './verify-risk.mjs';
 
 const CODE_ROOT = dirname(fileURLToPath(import.meta.url));
 const CAREER_OPS = getCareerOpsRoot();
@@ -672,6 +674,31 @@ if (jdArchiveMissing.length === 0 && jdArchiveReviewDue.length === 0 && jdArchiv
   ok(jdArchiveResult.reportsScanned === 0
     ? 'No reports yet — nothing to check for JD archives'
     : `All ${jdArchiveResult.reportsScanned} report(s) have an archived JD or a resolvable jds/ capture`);
+}
+
+// --- Check 18: Risk Assessment layer consistency ---
+// verify-risk.mjs is the deterministic post-evaluation safety net for the Risk
+// Assessment layer: it scans reports/ for the required section chain (G →
+// Risk Assessment → Employer Verification → Recommended Actions → Risk
+// Summary in order), the Machine Summary `risk_assessment:` mirror, and the
+// structural contradictions its own authoring rules forbid (an email-domain
+// mismatch recorded alongside 🟢 Low; fired indicators that re-derive to a
+// higher level than the stated one). Same severity philosophy as Check 17:
+// verify-risk.mjs's hard finding types (risk-order-error,
+// domain-mismatch-with-low, indicator-level-contradiction,
+// machine-summary-risk-missing) report here as errors; its soft types
+// (missing risk blocks on legacy reports, unparseable fields,
+// prose↔machine drift) report as warnings. LLM-free and network-free.
+const riskResult = checkRiskReports(REPORTS_DIR);
+const riskHard = riskResult.findings.filter((f) => HARD_FINDING_TYPES.has(f.type));
+const riskSoft = riskResult.findings.filter((f) => !HARD_FINDING_TYPES.has(f.type));
+for (const f of riskHard) error(`${f.file}: ${f.detail}`);
+for (const f of riskSoft) warn(`${f.file}: ${f.detail}`);
+for (const w of riskResult.warnings) warn(`${w.file}: ${w.detail}`);
+if (riskHard.length === 0 && riskSoft.length === 0 && riskResult.warnings.length === 0) {
+  ok(riskResult.reportsScanned === 0
+    ? 'No reports yet — nothing to check for risk consistency'
+    : `All ${riskResult.reportsScanned} report(s) pass the deterministic risk-consistency checks`);
 }
 
 // --- Summary ---

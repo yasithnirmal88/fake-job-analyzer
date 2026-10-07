@@ -57,6 +57,7 @@
     "digest": "node weekly-digest.mjs",
     "freshness": "node check-table-freshness.mjs",
     "jd-archive": "node check-jd-archive.mjs",
+    "risk-verify": "node verify-risk.mjs",
     "rejection-latency": "node rejection-latency.mjs",
     "invite-match": "node invite-match.mjs",
     "paste-reply": "node paste-reply.mjs",
