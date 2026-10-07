@@ -153,6 +153,42 @@ The same holds for Block B's **requirement Importance column**: it does NOT affe
 - Present signals and let the user decide
 - Always note legitimate explanations for concerning signals
 
+## Risk Assessment
+
+The Risk Assessment is a **verdict layer** that synthesizes Block G's posting-legitimacy signals (and select Block A signals) into a single, actionable risk verdict. It is **independent of the 1–5 fit score** — a high-fit role can be Critical risk, and a low-fit role can be Low risk.
+
+### Risk Levels
+
+| Level | Meaning | Typical indicators |
+|-------|---------|-------------------|
+| 🟢 Low | Genuine, active opening | Multiple positive signals, no concerning indicators |
+| 🟡 Medium | Some concerns, worth investigating | Mixed signals, minor red flags |
+| 🔴 High | Significant risk indicators present | Multiple concerning signals, strong scam/ghost patterns |
+| 🚨 Critical | Likely scam or confirmed dangerous | Confirmed scam patterns, fee requests, identity theft risk |
+
+### Risk Categories (multi-label)
+
+| Category | Source | Example indicators |
+|----------|--------|-------------------|
+| Scam Indicators | Block G signals | Fee requests, upfront payment, identity theft patterns |
+| Ghost/Stale | Block G signals | Reposting pattern, no response history, evergreen posting |
+| Suspicious | Block G signals | Vague JD, mismatched location, agency opacity |
+| Likely Genuine | Block G signals | Active posting, specific JD, positive company signals |
+
+The multi-label list can be empty (no categories fired) or contain a single category (e.g. only `Suspicious`) when the evidence supports it.
+
+### Confidence
+
+| Level | Meaning |
+|-------|---------|
+| High | Multiple independent indicators agree, evidence is direct |
+| Medium | Some indicators present, evidence is indirect or incomplete |
+| Low | Few indicators, evidence is ambiguous or missing |
+
+### Determination principle
+
+The Overall Risk Level is determined by **which explicit indicators fired**, not by the A–H fit scores. A single Critical indicator (e.g., confirmed scam pattern) can elevate the entire assessment to Critical, regardless of fit score.
+
 ## Company Type and Compensation Reliability
 
 Public salary data is a signal, not a promise. Before interpreting compensation, classify the employer / hiring entity first, then decide how much to trust the published range.

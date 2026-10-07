@@ -444,6 +444,11 @@ risk_summary:
   ai_infra: "{consistent | mismatch | not_evaluated}"
   ai_screening_disclosure: "{disclosed | corroborating_only | no_match | not_evaluated}"
   fixed_term: "{detected | not_detected | not_evaluated}"
+risk_assessment:
+  level: "{low | medium | high | critical}"
+  categories: ["{scam_indicators | ghost_stale | suspicious | likely_genuine}"]
+  confidence: "{high | medium | low}"
+  summary: "{1-2 sentence risk verdict}"
 ```
 
 Rules:
@@ -457,6 +462,7 @@ Rules:
 - `work_auth` reflects the Block A work-authorization tier: `no_sponsorship` only when the JD **explicitly** refuses sponsorship for a role outside the candidate's `authorized_in`; `unstated` when the JD is silent (neutral, not a blocker); `not_needed` when the role is within `authorized_in` or sponsorship isn't required; `sponsors` when the JD explicitly offers it.
 - `requirement_importance` mirrors Block B's table row by row — same rows, same verdicts, snake_cased. `evidence: stated` **requires** a non-null verbatim `jd_signal`; `jd_signal: null` is legal only for `structural` and `inferred`. `importance` is never `critical` or `high` when `evidence: inferred` — that is Block B's gate, machine-checkable here. `match` is `strong | partial | missing | na`, mirroring ✅ / ⚠️ / ❌ / ➖. Use `[]` when the JD yields no usable requirement list. No consumer reads this key yet; it is allowlisted so it round-trips.
 - `risk_summary` mirrors the `## Risk Summary` block row by row — same source verdicts, snake_cased: `legitimacy` from the Block G tier (`high_confidence` / `proceed_with_caution` / `suspicious`), `culture` from the Block A Culture screen (`pass` / `caution` / `fail`), `interview_redflags` from the red-flag file's warning level (`none` / `caution` / `warning`), `ai_screening_disclosure` from the Block G AI-screening disclosure signal (`disclosed` when the posting names AI/automated screening, `corroborating_only` when the jurisdiction requires disclosure and the posting is silent, `no_match` when the candidate's jurisdiction has no table row), and `fixed_term` from Signal 16 (`detected` / `not_detected`). Any row rendered `— not evaluated` (or `— no interview sessions yet`) is `not_evaluated` here. Never invent a value the block does not show.
+- `risk_assessment` mirrors the `## Risk Assessment` block — `level` is the Overall Risk Level (`low` / `medium` / `high` / `critical`), `categories` is the list of fired Risk Categories (snake_cased), `confidence` is the evidence confidence (`high` / `medium` / `low`), and `summary` is the 1-2 sentence verdict. The level is determined by explicit risk indicators, not by the fit score. Never invent a value the block does not show.
 
 ### Step 3 — Save the Report
 
@@ -551,6 +557,7 @@ Then include:
 - `## E) Personalization Plan`
 - `## F) Interview Plan`
 - `## G) Posting Legitimacy`
+- `## Risk Assessment`
 - `## Risk Summary`
 - `## Score Evidence`
 - `## Extracted Keywords`

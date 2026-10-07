@@ -46,6 +46,8 @@ On a hit, **stop before Step 1** and surface the candidate's own recorded decisi
 
 Execute the same as the `oferta` mode (read `modes/oferta.md` for all A-F blocks + Block G Posting Legitimacy). Read `modes/_custom.md` → Evaluation Rules, if it exists, and apply its override here. Default (if absent or silent): standard A-G evaluation.
 
+The evaluation includes a `## Risk Assessment` section (see `modes/oferta.md` → Risk Assessment) — a structured risk verdict determined by explicit indicators, independent of the fit score.
+
 **Agency-mediated postings (#1596, #4359):** before evaluation or any tracker, report, or CV write, apply `modes/_shared.md` → **Agency confirmation handoff**. Ask which agency this posting came through and wait for an explicit answer. A delegated/headless worker instead returns `needs_confirmation` to the parent and stops without artifacts; the parent asks and resumes only with the user's explicit answer for this posting. This is a gate, not a failed step to continue past. After confirmation, record an unknown end employer as `?` (never "Confidential"), the confirmed agency in Via / `via=`, and a distinguishing descriptor in Notes — see `modes/tracker.md` for the reveal workflow.
 
 The evaluation inherits `oferta`'s bounded research budget. Company, compensation, and hiring-signal lookup must not invoke `deep-research`, must not spawn subagents, and must stop at the shared query cap instead of escalating into open-ended research.

@@ -604,6 +604,27 @@ This is information about **your own history** with the company, not about this 
 
 ---
 
+## Risk Assessment
+
+After Block G's signals are evaluated, produce a structured `## Risk Assessment` section. This is a **verdict layer** — it synthesizes Block G's signals (and select Block A signals) into a single risk verdict the candidate can act on at a glance. It does not replace Block G's detailed signal analysis; it sits on top of it.
+
+**The Risk Assessment is determined by explicit indicators, not by the A–H fit scores.** A high-fit role (4.5/5) can still be Critical risk (scam posting), and a low-fit role (2.0/5) can be Low risk (real job, wrong match). The two axes are independent.
+
+### Output format:
+
+```markdown
+## Risk Assessment
+
+- **Overall Risk Level:** {🟢 Low | 🟡 Medium | 🔴 High | 🚨 Critical}
+- **Risk Categories:** {Scam Indicators | Ghost/Stale | Suspicious | Likely Genuine}
+- **Confidence:** {High | Medium | Low}
+- **Summary:** {1-2 sentences explaining the verdict}
+```
+
+**Backward compatibility:** Reports written before this section existed remain valid. The section is additive — downstream scripts that don't read it are unaffected.
+
+---
+
 ## Risk Summary (after Block G)
 
 Close the report body with a `## Risk Summary` block directly after Block G's section — one row per risk signal, fixed order — so the question the candidate actually asks ("is this company safe to join?") is answered on one screen instead of by mentally joining Block A, Block G, and a sidecar file.
@@ -761,6 +782,9 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 ## G) Posting Legitimacy
 (full content of block G)
 
+## Risk Assessment
+(Overall Risk Level, Risk Categories, Confidence, Summary — see the Risk Assessment section above)
+
 ## Risk Summary
 (one row per risk signal, fixed order — see the Risk Summary section above)
 
@@ -782,7 +806,7 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 (the posting's full text, pasted verbatim — see requirement below)
 ```
 
-**Machine Summary (required):** every report carries a `## Machine Summary` YAML fence directly after the header — same schema, exact field names, and rules as the "Machine Summary" block in `batch/batch-prompt.md` (do not duplicate the schema here; that file is the source of truth). It includes `advertised_comp`: the JD's own salary figure **verbatim** (e.g. `"80-90k EUR"`), or `null` when the JD states nothing — never estimated, never replaced with researched market data. This key seeds the advertised salary observation read by `node salary-gap.mjs`. It also includes `risk_summary`: the Risk Summary block mirrored as a map (schema and enum values in `batch/batch-prompt.md`), and `requirement_importance`: Block B's table mirrored row by row, carrying each row's evidence tier, importance band and match (`[]` when the JD yields no usable requirement list). The `inferred` cap from Block B's gate holds in the YAML too — `importance` is never `critical` or `high` when `evidence: inferred`.
+**Machine Summary (required):** every report carries a `## Machine Summary` YAML fence directly after the header — same schema, exact field names, and rules as the "Machine Summary" block in `batch/batch-prompt.md` (do not duplicate the schema here; that file is the source of truth). It includes `advertised_comp`: the JD's own salary figure **verbatim** (e.g. `"80-90k EUR"`), or `null` when the JD states nothing — never estimated, never replaced with researched market data. This key seeds the advertised salary observation read by `node salary-gap.mjs`. It also includes `risk_summary`: the Risk Summary block mirrored as a map (schema and enum values in `batch/batch-prompt.md`), `risk_assessment`: the Risk Assessment block mirrored as a map (schema and enum values in `batch/batch-prompt.md`), and `requirement_importance`: Block B's table mirrored row by row, carrying each row's evidence tier, importance band and match (`[]` when the JD yields no usable requirement list). The `inferred` cap from Block B's gate holds in the YAML too — `importance` is never `critical` or `high` when `evidence: inferred`.
 
 **JD archival (required, #2789):** every report MUST carry a `## Job Description (archived verbatim)` section with the posting's full text pasted as-is — never summarized, never paraphrased. A `**URL:**` header alone is not an archive: it is a live pointer that rots once the posting closes or gets taken down, which reliably happens somewhere in the weeks between applying and a later interview round, and there is no way to recover the original requirements after that. This is the primary mechanism, not a fallback — the report is the one artifact guaranteed to get written and tracked, unlike a separate `jds/` file. If the JD is very long, write it to `archive-posting.mjs --report={num}` instead (or another `{num}-...`-prefixed capture) and, in place of the text, put in this section **exactly** `See jds/{filename} for the full archive (archive-posting.mjs --report={num}).` — `check-jd-archive.mjs` only credits this canonical pointer sentence when it resolves back to that report's number via `findCaptureForReport`; a slug-only `jds/{slug}.md` with no report number does not validate here. This exact phrasing matters: the check only treats a section as a pointer (requiring resolution) when the section is nothing but this sentence — any additional prose alongside it is read as the archived text itself, not a pointer, so don't mix the two. Slug-only captures remain fine for `jd-skill-gap.mjs` run standalone, outside a full evaluation, where there is no report to link back to. `check-jd-archive.mjs` validates every `reports/*.md` has one form or the other and is wired into `test-all.mjs` — a report missing both is a test failure.
 
