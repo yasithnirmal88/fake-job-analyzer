@@ -635,6 +635,8 @@ After Block G's signals are evaluated, produce a structured `## Risk Assessment`
 
 Only include indicators that actually fired. If none fired, omit the Key Indicators subsection entirely.
 
+**Post-evaluation guard (safety net, not a replacement):** `verify-risk.mjs` re-checks what this section instructs, deterministically — the section chain and its order, the Machine Summary `risk_assessment:` mirror, and the specific structural contradictions a wrong verdict leaves behind (`No` email-domain match + 🟢 Low; fired indicators that re-derive higher than stated). It runs via `npm run risk-verify` and inside `verify-pipeline.mjs` (Check 18). Never let a failed check override a verdict you can defend — report it, then reconcile the report with the evidence.
+
 ### Language discipline (MANDATORY):
 
 - **Never** state "this is a scam", "this is definitely fake", or "this is a ghost job" as a conclusion.

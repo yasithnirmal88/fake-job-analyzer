@@ -42,6 +42,7 @@ All scripts live in the project root as `.mjs` modules. Most are exposed via
 | `npm run paste-reply` | `paste-reply.mjs` | Manual/no-Gmail input into the `reply-watch.mjs` classification pipeline |
 | `npm run freshness` | `check-table-freshness.mjs` | Staleness validator for jurisdiction data tables (`as_of` / `next_effective` watchdog) |
 | `npm run jd-archive` | `check-jd-archive.mjs` | Validate every `reports/*.md` has an archived JD (embedded section or `jds/` capture) — flags `missing-jd-archive` |
+| `npm run risk-verify` | `verify-risk.mjs` | Deterministic post-evaluation safety net for the Risk Assessment layer — flags `risk-order-error`, `domain-mismatch-with-low`, `indicator-level-contradiction`, `machine-summary-risk-missing` (hard) |
 | `npm run openai:tailor` | `openai-tailor.mjs` | Tailor a CV via any OpenAI-compatible endpoint (headless companion to `openai-eval.mjs`) |
 | `npm run or` | `openrouter-runner.mjs` | Run scan/evaluate/pipeline/apply on OpenRouter free models — no Claude CLI required |
 | `npm run reconcile` | `reconcile-pipeline.mjs` | Remove batch-evaluated offers from pipeline.md "Pendientes" |
@@ -593,6 +594,34 @@ node check-jd-archive.mjs --self-test
 ```
 
 **Exit codes:** `1` if any `missing-jd-archive` finding, `0` otherwise (including the empty-repo case — `reports/*.md` is gitignored, so a fresh checkout has nothing to scan). Wired into `test-all.mjs`'s `--self-test` invocation; backfilling JD text for pre-existing reports that predate this validator is explicitly out of scope (#2789) — this only prevents the gap going forward.
+
+---
+
+## verify-risk
+
+Deterministic, post-evaluation safety net for the Risk Assessment layer. A single failed verdict there — an email-domain mismatch recorded alongside 🟢 Low, or a fired Critical/High indicator that the determination ladder re-derives to a higher level than the stated one — is a silent under-detection that no later step catches, so this script scans every `reports/*.md` and enforces the structure the layer's own instructions pin down. Zero LLM, zero network, zero writes.
+
+Scans for, in order of appearance (identical wording to the report template):
+
+- **`risk-order-error` (hard)** — the required chain `## G) Posting Legitimacy` → `## Risk Assessment` → `## Employer Verification` → `## Recommended Actions` → `## Risk Summary` is present but not adjacent and in that exact order.
+- **`domain-mismatch-with-low` (hard)** — `## Employer Verification`'s `**Email domain matches claimed company:**` is `No` while the stated Overall Risk Level is 🟢 Low. This targets exactly that under-detection trap; it is scoped strictly to `No` + Low so a `No` on an appropriately elevated report is never a false positive.
+- **`indicator-level-contradiction` (hard)** — the fired `### Key Indicators` IDs (C1–C4 / H1–H5 / M1–M4 / L1–L3) re-derive via `modes/_shared.md`'s ordered determination ladder to a level *higher* than the one the report states. It never runs on a report with no Key Indicators (a High report omitting the optional list is not over-flagged), and gap shapes with no documented rule (`[M1]`, `[H1,M1]`, `[M1,L1]`) never assert a contradiction.
+- **`machine-summary-risk-missing` (hard)** — `## Risk Assessment` is present but the `## Machine Summary` YAML has no `risk_assessment:` map (downstream scripts read the level from there).
+- **`risk-blocks-missing` (soft)** — the chain is missing entirely. Additive feature, so legacy reports legitimately lack it — never an error, only a warning.
+- **`risk-assessment-unparseable` / `ev-domain-unreadable` (soft)** — the level line or the EV domain field is present but unparseable, so the deterministic rules can't apply; a warning, not a fabricated verdict.
+- **`risk-summary-drift` (soft)** — the prose level disagrees with the Machine Summary `risk_assessment.level`. Reported, never blocking.
+
+Report files matching `^\d+-RESERVED\.md$` (report-number reservation sentinels) are skipped. Hard findings exit `1`; soft findings and warnings never do.
+
+```bash
+npm run risk-verify
+node verify-risk.mjs                     # JSON to stdout
+node verify-risk.mjs --summary            # human-readable table
+node verify-risk.mjs --reports-dir <path> # override reports/ (testing)
+node verify-risk.mjs --self-test
+```
+
+Wired into `verify-pipeline.mjs` as Check 18 (hard types → errors, soft types → warnings) and into `test-all.mjs`'s `--self-test` invocation. A safety net, not a replacement: it enforces structure and the ordering rules the layer's instructions already pin down — it does not re-derive the risk verdict itself.
 
 ---
 

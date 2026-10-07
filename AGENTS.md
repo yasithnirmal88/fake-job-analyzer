@@ -169,6 +169,7 @@ AI-powered, CLI-agnostic job search automation: pipeline tracking, offer evaluat
 | `weekly-digest.mjs` | Rolls up `interview-prep/sessions/*.md` (default: current ISO week) into a per-company round summary, recurring competency-tag counts, and best-effort recurring 🔴 gaps from `question-bank.md` (JSON or `--summary`) |
 | `reports/` | Evaluation reports `{###}-{company-slug}-{YYYY-MM-DD}.md` — Blocks A-F + G (Posting Legitimacy) + Risk Assessment + Risk Summary + `## Machine Summary` YAML; header includes `**Legitimacy:** {tier}`; **REQUIRED:** a `## Job Description (archived verbatim)` section with the JD's verbatim text, or an equivalent `jds/` capture (#2789) |
 | `check-jd-archive.mjs` | Validates every `reports/*.md` has an archived JD — an embedded `## Job Description` section with substantive content, or a matching `jds/` capture resolved by report number via `jd-capture.mjs`; flags `missing-jd-archive`; read-only (JSON or `--summary` table output) |
+| `verify-risk.mjs` | Post-evaluation safety net for the Risk Assessment layer — scans every `reports/*.md` for the required chain (G → Risk Assessment → Employer Verification → Recommended Actions → Risk Summary, in order), the Machine Summary `risk_assessment:` mirror, and the structural contradictions the layer's own rules forbid (`domain-mismatch-with-low`: email domain `No` + 🟢 Low; `indicator-level-contradiction`: fired indicators re-deriving higher than stated); hard types exit 1, missing/legacy and drift types are warnings; zero LLM/network/writes (JSON or `--summary`) |
 
 ### Plugins (optional)
 
@@ -479,6 +480,8 @@ The Risk Level is determined by **explicit risk indicators** (severity-graded: C
 A `## Employer Verification` section sits immediately after Risk Assessment — four lightweight checks (company website, email domain match, careers page, notes) using evidence already gathered, with no new mandatory network calls. These results feed the indicator checks (especially H1, H3, H4, M4) but do not replace the indicator rules.
 
 The sections sit between Block G and Risk Summary in the report. Both are additive — existing reports without them remain valid.
+
+`verify-risk.mjs` is a **safety net, not a replacement** for this layer: it runs alongside every evaluation (wired into `verify-pipeline.mjs` as Check 18) and enforces only what these instructions already pin down — the section chain, its order, and the specific structural contradictions a wrong verdict leaves behind (a `No` email-domain match alongside 🟢 Low, fired indicators that re-derive to a higher level than stated, a missing Machine Summary `risk_assessment:` mirror). It is deterministic, read-only, and never invents a verdict.
 
 ---
 
