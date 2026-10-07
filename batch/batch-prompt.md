@@ -559,6 +559,7 @@ Then include:
 - `## G) Posting Legitimacy`
 - `## Risk Assessment`
 - `## Employer Verification`
+- `## Recommended Actions`
 - `## Risk Summary`
 - `## Score Evidence`
 - `## Extracted Keywords`

@@ -679,6 +679,46 @@ Language remains careful and non-absolute: the block states observed facts only 
 
 ---
 
+## Recommended Actions
+
+A short, prioritized, actionable list placed immediately after `## Employer Verification` and before `## Risk Summary`. It converts the Risk Assessment verdict and the Employer Verification results into concrete next steps for the candidate.
+
+### Output format:
+
+```markdown
+## Recommended Actions
+
+- {action 1}
+- {action 2}
+- {action 3}
+```
+
+### Generation rules:
+
+1. **Derived, not generic.** Every bullet must be traceable to a fired indicator (`modes/_shared.md` → Risk Indicators) or a specific Employer Verification result. Never include advice that applies to every posting.
+2. **Safety first at high risk.** When Overall Risk Level is 🚨 Critical or 🔴 High, the first actions must address money and personal data (e.g. "Do not send any payment, registration fee, or equipment money", "Do not share bank details, national ID, passport, or other highly sensitive documents") before any verification or research steps.
+3. **Verification steps when checks fail.** If Employer Verification shows an email domain mismatch, `Company website: Not found`, or `Role found on official careers page: No / Unknown`, include the matching verification step (e.g. "Verify the company website and confirm the email domain matches the claimed company", "Search for this exact role on the company's official careers page").
+4. **Lighter tone for low risk.** When only Ghost/Stale or Low-severity signals fired, keep the tone focused on confirmation (e.g. "Consider this a potential ghost/stale listing — confirm the role is still active before applying"), not on safety warnings.
+5. **Relevant indicator mapping (use only what applies):**
+
+| Fired indicator(s) | Action |
+|--------------------|--------|
+| C1 | Do not send any payment, registration fee, or equipment money |
+| C2 | Do not share bank details, national ID, passport, or other highly sensitive documents |
+| C3 / C4 | Treat this posting with high caution before investing time — cross-check the recruiter's identity on LinkedIn or the company directory first |
+| H1 / H4 or domain mismatch in Employer Verification | Verify the company website and confirm the email domain matches the claimed company |
+| H3 or `Company website: Not found` | Search for this exact role (or a close variant) on the company's official careers page |
+| H5 or `Role found = Unknown/No` | Consider this a potential ghost/stale listing — confirm the role is still active before applying |
+| H2 | Treat this posting with medium caution before investing time — urgency pressure is a common tactic |
+
+6. **Length:** maximum 5 bullets; prefer 3–4. Order bullets by severity (most severe indicator first). At 🟢 Low with no fired indicators, emit a single light bullet (e.g. "No notable risk signals found — proceed with your normal application checks") or omit the section.
+
+Language follows the same discipline as Risk Assessment: qualified and direct ("Do not send…", "Confirm…"), never absolute or accusatory ("This is a scam").
+
+**Backward compatibility:** Reports written before this section existed remain valid. The section is additive.
+
+---
+
 ## Risk Summary (after Block G)
 
 Close the report body with a `## Risk Summary` block directly after Block G's section — one row per risk signal, fixed order — so the question the candidate actually asks ("is this company safe to join?") is answered on one screen instead of by mentally joining Block A, Block G, and a sidecar file.
@@ -841,6 +881,9 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 
 ## Employer Verification
 (company website, email domain match, careers page check, additional notes — see the Employer Verification section above)
+
+## Recommended Actions
+(prioritized actionable bullets derived from fired indicators + Employer Verification results, max 5 — see the Recommended Actions section above)
 
 ## Risk Summary
 (one row per risk signal, fixed order — see the Risk Summary section above)

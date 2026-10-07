@@ -277,6 +277,16 @@ The multi-label list can be empty (no categories fired beyond Likely Genuine) or
 - **Always** note legitimate explanations: "This could also be explained by…" when the evidence allows.
 - The Risk Assessment presents **evidence and indicators**, not verdicts. The candidate decides what to do with the information.
 
+### Relationship to existing sections
+
+- **Block G (Posting Legitimacy)** — detailed signal analysis (the evidence)
+- **Risk Assessment** — structured verdict (the headline)
+- **Employer Verification** — four lightweight checks feeding the indicator evidence
+- **Recommended Actions** — prioritized next steps derived from the fired indicators and verification results
+- **Risk Summary** — aggregation table (the per-signal breakdown)
+
+The Risk Assessment sits between Block G and Risk Summary in the report, with Employer Verification and Recommended Actions in between. None of them replace the others; they form a chain: evidence → verdict → checks → actions → summary.
+
 ## Company Type and Compensation Reliability
 
 Public salary data is a signal, not a promise. Before interpreting compensation, classify the employer / hiring entity first, then decide how much to trust the published range.
